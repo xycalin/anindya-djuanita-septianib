@@ -1,0 +1,325 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Kebun Kelinci</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700&family=Nunito:wght@500;700;800&display=swap">
+<style>
+/* Layout: satu kolom ala aplikasi seluler. Atas = mata uang & level, tengah = tab aktif, bawah = navigasi 5 tab. */
+*{box-sizing:border-box}
+:root{
+  --bg:#E7F0E0;--surface:#F7FAF2;--ink:#21352A;--muted:#5C7366;
+  --accent:#2E8A57;--on-accent:#FFFFFF;--blossom:#DD5F83;--gold:#C98A08;
+  --line:#CBDAC4;--sky:#C7E5EE;--cloud:rgba(255,255,255,.8);
+  --grass:#B5D99D;--grass2:#9DCB84;--track:#D6E3CF;--warn:#C2542D;
+  --f-d:'Baloo 2','Trebuchet MS',sans-serif;
+  --f-b:'Nunito','Segoe UI',system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#111C16;--surface:#1A2920;--ink:#E5F0E2;--muted:#9AB2A1;
+  --accent:#5CC58A;--on-accent:#0E1A13;--blossom:#F08AA6;--gold:#EDB23A;
+  --line:#2B4032;--sky:#1E3A46;--cloud:rgba(255,255,255,.14);
+  --grass:#2D5A3B;--grass2:#27503A;--track:#27392E;--warn:#F08A62;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111C16;--surface:#1A2920;--ink:#E5F0E2;--muted:#9AB2A1;
+  --accent:#5CC58A;--on-accent:#0E1A13;--blossom:#F08AA6;--gold:#EDB23A;
+  --line:#2B4032;--sky:#1E3A46;--cloud:rgba(255,255,255,.14);
+  --grass:#2D5A3B;--grass2:#27503A;--track:#27392E;--warn:#F08A62;color-scheme:dark}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font:500 15px/1.45 var(--f-b);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:0}
+#app{max-width:540px;margin:0 auto;height:100%;display:flex;flex-direction:column;gap:10px;padding-block:10px}
+button{font-family:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--blossom);outline-offset:2px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+h1{font:700 24px/1 var(--f-d);margin:0;letter-spacing:.2px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{display:flex;align-items:center;gap:5px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px 10px 3px 6px;font:800 14px var(--f-b);font-variant-numeric:tabular-nums}
+.lvl{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);font-weight:700}
+.lvl .meter{flex:1}
+main{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding-bottom:6px;scrollbar-width:thin}
+h2{font:700 18px/1.2 var(--f-d);margin:18px 0 8px}
+h2:first-child{margin-top:4px}
+p{margin:0}
+.hint{color:var(--muted);font-size:13px}
+nav{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:4px}
+nav button{display:flex;flex-direction:column;align-items:center;gap:2px;border:0;background:transparent;border-radius:16px;padding:7px 2px;font:800 11px var(--f-b);color:var(--muted);cursor:pointer}
+nav button svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+nav button.on{background:var(--accent);color:var(--on-accent)}
+.scene{position:relative;height:290px;border-radius:22px;overflow:hidden;border:1px solid var(--line);
+  background:linear-gradient(var(--sky) 0 44%,var(--grass) 44% 100%)}
+.scene .sun{position:absolute;right:10%;top:9%;width:38px;height:38px;border-radius:50%;background:var(--gold);opacity:.9}
+.scene .cl{position:absolute;height:16px;border-radius:99px;background:var(--cloud)}
+.scene .hill{position:absolute;left:-20%;right:-20%;top:36%;height:34%;border-radius:50%;background:var(--grass2)}
+.dc{position:absolute;width:64px;height:64px;transform:translate(-50%,-100%);pointer-events:none}
+.sb{position:absolute;width:64px;transform:translate(-50%,-100%);border:0;background:none;padding:0;cursor:pointer;
+  transition:left 2.4s ease-in-out,top 2.4s ease-in-out;-webkit-tap-highlight-color:transparent}
+.sb svg{width:64px;height:64px;display:block}
+.sb .tag{position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);font:800 10px var(--f-b);background:var(--surface);color:var(--ink);border-radius:99px;padding:0 6px;white-space:nowrap;border:1px solid var(--line)}
+.flip{display:block;transition:transform .3s}.flip.r{transform:scaleX(-1)}
+.hopper{display:block}.hop .hopper{animation:hop .55s ease-in-out 4}
+@keyframes hop{50%{transform:translateY(-9px)}}
+.hf{position:absolute;width:20px;height:20px;transform:translate(-50%,-100%);pointer-events:none;animation:rise .95s ease-out forwards;z-index:200}
+@keyframes rise{from{opacity:1;margin-top:0}to{opacity:0;margin-top:-44px}}
+.row{display:flex;justify-content:space-between;gap:8px;margin-top:8px;font-size:13px;color:var(--muted);font-weight:700;flex-wrap:wrap}
+.plots{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.plot{border:2px dashed var(--line);background:var(--surface);border-radius:16px;min-height:92px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;font:800 12px var(--f-b);padding:6px}
+.plot.ready{border-style:solid;border-color:var(--accent)}
+.plot svg{width:42px;height:42px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:12px;display:flex;gap:12px;align-items:center;margin-bottom:8px}
+.card .grow{flex:1;min-width:0}
+.card h3{margin:0;font:700 17px/1.1 var(--f-d)}
+.sub{font-size:12px;color:var(--muted);font-weight:700}
+.pv{width:62px;height:62px;flex:none;background:var(--track);border-radius:16px;display:grid;place-items:center}
+.pv svg{width:56px;height:56px}
+.meter{height:8px;background:var(--track);border-radius:99px;overflow:hidden}
+.meter i{display:block;height:100%;background:var(--accent);border-radius:99px;transition:width .4s}
+.meter.j i{background:var(--blossom)}.meter.p i{background:var(--gold)}
+.meters{display:grid;grid-template-columns:auto 1fr;gap:3px 8px;align-items:center;margin-top:6px;font-size:11px;font-weight:800;color:var(--muted)}
+.btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.btn{font:800 13px var(--f-b);padding:8px 12px;border-radius:12px;border:0;background:var(--accent);color:var(--on-accent);cursor:pointer}
+.btn.alt{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.menu{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:6px}
+.menu div{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:8px;font-size:12px;font-weight:800;text-align:center}
+.menu span{display:block;color:var(--muted);font-weight:700}
+.dgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.dgrid .card{flex-direction:column;align-items:stretch;text-align:center;margin:0}
+.dgrid .pv{width:100%;height:74px}.dgrid .pv svg{width:64px;height:64px}
+.holes{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:340px;margin:10px auto}
+.hole{aspect-ratio:1;border-radius:50%;border:0;background:#6B4E3A;box-shadow:inset 0 8px 0 #00000030;display:grid;place-items:center;cursor:pointer;padding:0}
+.hole svg{width:62%;opacity:0;transform:translateY(10px);transition:.12s}
+.hole.on svg{opacity:1;transform:none}
+.big{font:700 22px var(--f-d)}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(88px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:99px;font:800 13px var(--f-b);max-width:90vw;text-align:center;z-index:50;opacity:0;pointer-events:none;transition:opacity .2s}
+#toast.show{opacity:1}
+#sheet{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:40;display:flex;align-items:flex-end;justify-content:center}
+#sheet .in{background:var(--bg);width:100%;max-width:540px;border-radius:22px 22px 0 0;padding:16px max(16px,env(safe-area-inset-left,0px)) calc(16px + env(safe-area-inset-bottom,0px));max-height:80%;overflow:auto}
+details{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin-top:12px;font-size:13px}
+summary{font-weight:800;cursor:pointer}
+details ul{margin:8px 0 0;padding-left:18px}
+.foot{margin-top:16px;text-align:center}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div id="app">
+  <header class="top">
+    <h1>Kebun Kelinci</h1>
+    <div class="chips" aria-live="polite">
+      <span class="chip" id="c-coin"></span><span class="chip" id="c-car"></span>
+    </div>
+    <div class="lvl" style="flex-basis:100%"><span id="c-lvl"></span><div class="meter p"><i id="c-xp"></i></div></div>
+  </header>
+  <main id="view"></main>
+  <nav id="nav" aria-label="Menu utama"></nav>
+</div>
+<div id="toast" role="status"></div>
+<div id="sheet" hidden></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const rnd=(a,b)=>a+Math.random()*(b-a),ri=(a,b)=>Math.floor(rnd(a,b+1)),pick=a=>a[Math.floor(Math.random()*a.length)];
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function mix(hex,p){const n=parseInt(hex.slice(1),16);let r=n>>16,g=(n>>8)&255,b=n&255;const t=p<0?0:255,a=Math.abs(p);
+  r=Math.round(r+(t-r)*a);g=Math.round(g+(t-g)*a);b=Math.round(b+(t-b)*a);return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1)}
+
+/* ---------- Data ---------- */
+const SP={
+  holland:{n:'Holland Lop',lop:1,coats:['#F1ECE3','#D9B98F','#9A7B63','#B9BCC4'],price:45,lv:1,sz:1},
+  dwarf:{n:'Netherland Dwarf',coats:['#F1ECE3','#E2C29A','#6E7078'],price:55,lv:1,sz:.82},
+  rex:{n:'Mini Rex',coats:['#8B5E45','#4B4A50','#D5B48E'],price:70,lv:2,sz:1},
+  dutch:{n:'Dutch',dutch:1,coats:['#3A393F','#8A5A3C','#6F7480'],price:90,lv:3,sz:1},
+  lion:{n:'Lionhead',mane:1,coats:['#E6D2B5','#F1ECE3','#B49377'],price:110,lv:4,sz:1}
+};
+const PERS={pemalu:'Pemalu',lincah:'Lincah',tenang:'Tenang',manja:'Manja',rakus:'Rakus',penasaran:'Penasaran'};
+const PERSD={pemalu:'Sembunyi dulu sebelum berani keluar.',lincah:'Tidak bisa diam, suka lompat-lompat.',tenang:'Santai, betah rebahan seharian.',manja:'Selalu minta dielus.',rakus:'Wortel adalah segalanya.',penasaran:'Mengendus semua yang baru.'};
+const NAMES=['Mochi','Kopi','Boba','Kacang','Pudding','Nori','Susu','Klepon','Bakpao','Lemper','Cilok','Onde','Tempe','Pandan','Jahe','Wafer','Sagu','Dadar'];
+const CN=['Sari','Budi','Wayan','Dewi','Rizky','Ayu','Tono','Putri','Dimas','Nia','Agus','Lestari'];
+const PLACES=['pinggir sawah','kardus di depan toko','taman kota','halaman belakang rumah','pasar pagi','teras sebuah warung'];
+const TREATS=[{id:'teh',n:'Teh Wortel',c:1,pay:10},{id:'pan',n:'Pancake Wortel',c:2,pay:24},{id:'pud',n:'Puding Wortel',c:3,pay:40}];
+const GROW=25000,PAT=80000;
+const DECOR=[
+ {id:'bunga',n:'Bedeng Bunga',cost:30,charm:2,x:12,y:92,svg:'<rect x="6" y="46" width="48" height="8" rx="4" fill="#8A6A52"/><path d="M14 44V38M26 44V32M38 44V38M48 44V33" stroke="#3F8F5B" stroke-width="2"/><circle cx="14" cy="36" r="5" fill="#E4678A"/><circle cx="26" cy="30" r="5" fill="#F5C542"/><circle cx="38" cy="36" r="5" fill="#fff"/><circle cx="48" cy="31" r="5" fill="#B48CE0"/>'},
+ {id:'tikar',n:'Tikar Piknik',cost:60,charm:3,x:34,y:94,svg:'<rect x="6" y="38" width="48" height="16" rx="3" fill="#E4678A"/><path d="M14 38v16M26 38v16M38 38v16M6 46h48" stroke="#fff" stroke-width="3" opacity=".7"/><circle cx="24" cy="36" r="5" fill="#E3503E"/>'},
+ {id:'lentera',n:'Lentera Taman',cost:90,charm:3,x:66,y:62,svg:'<rect x="28" y="22" width="4" height="32" fill="#4A4A52"/><rect x="21" y="8" width="18" height="16" rx="4" fill="#F7D774" stroke="#4A4A52" stroke-width="2.5"/><rect x="22" y="52" width="16" height="4" rx="2" fill="#4A4A52"/>'},
+ {id:'pohon',n:'Pohon Apel',cost:80,charm:4,x:86,y:58,svg:'<rect x="27" y="30" width="7" height="26" rx="2" fill="#8A6A52"/><circle cx="30" cy="24" r="19" fill="#4FA36A"/><circle cx="22" cy="22" r="3" fill="#E3503E"/><circle cx="36" cy="30" r="3" fill="#E3503E"/><circle cx="32" cy="15" r="3" fill="#E3503E"/>'},
+ {id:'kolam',n:'Kolam Kecil',cost:150,charm:5,x:78,y:95,svg:'<ellipse cx="30" cy="44" rx="27" ry="12" fill="#8EC8DA" stroke="#6BA6BB" stroke-width="3"/><ellipse cx="22" cy="44" rx="6" ry="3" fill="#4FA36A"/><circle cx="40" cy="42" r="2" fill="#fff" opacity=".7"/>'},
+ {id:'rumah',n:'Rumah Kelinci',cost:120,charm:6,x:50,y:56,svg:'<rect x="10" y="28" width="40" height="26" fill="#E9C79A"/><polygon points="5,30 30,9 55,30" fill="#C45F4A"/><path d="M24 54V42a6 6 0 0 1 12 0v12z" fill="#5B3F31"/>'},
+ {id:'ayunan',n:'Ayunan Rotan',cost:200,charm:7,x:16,y:60,svg:'<rect x="6" y="18" width="4" height="36" rx="2" fill="#8A6A52"/><rect x="50" y="18" width="4" height="36" rx="2" fill="#8A6A52"/><path d="M8 24Q30 56 52 24" stroke="#C98F5B" stroke-width="6" fill="none" stroke-linecap="round"/>'}
+];
+
+/* ---------- State ---------- */
+const KEY='kebunKelinci.v1';
+let S,tab='taman',customers=[],cid=0,nextArrive=0,tickN=0,pos={},mg=null,resetArm=false,toastT;
+const level=()=>1+Math.floor(S.xp/40);
+const charm=()=>DECOR.filter(d=>S.decor.includes(d.id)).reduce((a,d)=>a+d.charm,0);
+const cap=()=>3+Math.floor(charm()/8);
+function mkBunny(sp){const s=sp||pick(Object.keys(SP));return{id:S.nextId++,sp:s,name:pick(NAMES),coat:pick(SP[s].coats),pers:pick(Object.keys(PERS)),hunger:70,joy:55}}
+function mkCand(){const ok=Object.keys(SP).filter(k=>SP[k].lv<=level());const b=mkBunny(pick(ok));b.place=pick(PLACES);b.price=SP[b.sp].price+ri(0,20);return b}
+function fresh(){S={coins:60,carrots:4,xp:0,adopted:0,nextId:1,bunnies:[],decor:[],plots:[{s:0,t:0},{s:0,t:0},{s:0,t:0}],cands:[],mgNext:0,seen:Date.now()};
+  S.bunnies.push({id:S.nextId++,sp:'holland',name:'Mochi',coat:'#F1ECE3',pers:'manja',hunger:70,joy:60});
+  S.cands=[mkCand(),mkCand(),mkCand()]}
+function load(){try{const r=localStorage.getItem(KEY);if(r){const o=JSON.parse(r);if(o&&Array.isArray(o.bunnies)&&Array.isArray(o.plots)){S=o;
+  const mins=Math.min(60,(Date.now()-(S.seen||Date.now()))/60000);S.bunnies.forEach(b=>{b.hunger=clamp(b.hunger-mins*1.2,10,100);b.joy=clamp(b.joy-mins*.6,10,100)});
+  while(S.cands.length<3)S.cands.push(mkCand());return}}}catch(e){}fresh()}
+function save(){S.seen=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+
+/* ---------- Art ---------- */
+function bunnySVG(b){
+  const sp=SP[b.sp],c=b.coat,d=mix(c,-.18),pink='#F4B6C2';let s='';
+  s+='<circle cx="84" cy="70" r="8" fill="#fff"/>';
+  const bodyC=sp.dutch?'#F4F1EC':c;
+  s+=`<ellipse cx="56" cy="72" rx="28" ry="20" fill="${bodyC}"/>`;
+  if(sp.dutch)s+=`<ellipse cx="68" cy="66" rx="19" ry="15" fill="${c}"/>`;
+  s+=`<ellipse cx="34" cy="90" rx="9" ry="5" fill="${bodyC}"/><ellipse cx="68" cy="91" rx="13" ry="5" fill="${bodyC}"/>`;
+  if(!sp.lop)s+=`<ellipse cx="26" cy="24" rx="6.5" ry="18" transform="rotate(-8 26 24)" fill="${c}"/><ellipse cx="26" cy="25" rx="3" ry="12" transform="rotate(-8 26 25)" fill="${pink}"/><ellipse cx="43" cy="22" rx="6.5" ry="18" transform="rotate(10 43 22)" fill="${c}"/><ellipse cx="43" cy="23" rx="3" ry="12" transform="rotate(10 43 23)" fill="${pink}"/>`;
+  if(sp.mane){const m=mix(c,.15);for(let i=0;i<10;i++){const a=i/10*Math.PI*2;s+=`<circle cx="${34+21*Math.cos(a)}" cy="${52+21*Math.sin(a)}" r="8" fill="${m}"/>`}}
+  s+=`<circle cx="34" cy="52" r="18" fill="${c}"/>`;
+  if(sp.dutch)s+='<ellipse cx="34" cy="52" rx="5" ry="15" fill="#F4F1EC"/>';
+  if(sp.lop)s+=`<ellipse cx="17" cy="60" rx="8" ry="17" transform="rotate(16 17 60)" fill="${d}"/><ellipse cx="51" cy="60" rx="8" ry="16" transform="rotate(-16 51 60)" fill="${d}"/>`;
+  s+=`<circle cx="23" cy="58" r="3.5" fill="#F4A7B8" opacity=".55"/><circle cx="45" cy="58" r="3.5" fill="#F4A7B8" opacity=".55"/>`;
+  s+=`<circle cx="28" cy="51" r="2.8" fill="#2A2A30"/><circle cx="40" cy="51" r="2.8" fill="#2A2A30"/><circle cx="28.8" cy="50.2" r=".9" fill="#fff"/><circle cx="40.8" cy="50.2" r=".9" fill="#fff"/>`;
+  s+=`<ellipse cx="34" cy="57" rx="2.6" ry="1.8" fill="#E58AA0"/><path d="M34 58.5v2M34 60.5q-3 3-5 1M34 60.5q3 3 5 1" stroke="#7A5560" stroke-width="1.1" fill="none" stroke-linecap="round"/>`;
+  return `<svg viewBox="0 0 100 100" style="${sp.sz<1?'transform:scale('+sp.sz+');transform-origin:50% 100%':''}" aria-hidden="true">${s}</svg>`}
+const coinSVG='<svg viewBox="0 0 20 20" width="20" height="20"><circle cx="10" cy="10" r="9" fill="#E0A21B"/><circle cx="10" cy="10" r="6" fill="none" stroke="#B87D0A" stroke-width="1.5"/></svg>';
+const carrotSVG='<svg viewBox="0 0 20 20" width="20" height="20"><path d="M10 6l5 2-4 11a1 1 0 0 1-2 0L5 8z" fill="#F0842C" transform="rotate(25 10 12)"/><path d="M9 7C7 3 5 3 4 2M10 6c0-3 1-4 2-5M11 7c2-2 4-2 5-2" stroke="#3F9B5A" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>';
+const heartSVG='<svg viewBox="0 0 24 24"><path d="M12 21s-8-5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 6-8 11-8 11z" fill="#E4678A"/></svg>';
+function personSVG(l){return `<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="44" r="16" fill="${l.shirt}"/><circle cx="24" cy="20" r="10" fill="${l.skin}"/><path d="M13 19a11 11 0 0 1 22 0c-4-4-9-5-13-4-4 0-7 1-9 4z" fill="${l.hair}"/><circle cx="20.5" cy="21" r="1.2" fill="#2A2A30"/><circle cx="27.5" cy="21" r="1.2" fill="#2A2A30"/><path d="M21 25q3 2.5 6 0" stroke="#2A2A30" fill="none" stroke-width="1.2" stroke-linecap="round"/></svg>`}
+const ICONS={
+ taman:'<path d="M5 19c0-8 5-13 14-14 0 9-5 14-14 14zM5 19l8-8"/>',
+ kafe:'<path d="M5 9h11v5a5 5 0 0 1-5 5H10a5 5 0 0 1-5-5zM16 10h2a2 2 0 0 1 0 4h-2"/>',
+ rescue:'<path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.500-7 10-7 10z"/>',
+ dekor:'<path d="M4 11l8-6 8 6v8H4zM10 19v-5h4v5"/>',
+ main:'<path d="M8 5l11 7-11 7z"/>'};
+const TABS=[['taman','Taman'],['kafe','Kafe'],['rescue','Rescue'],['dekor','Dekor'],['main','Main']];
+
+/* ---------- UI helpers ---------- */
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2300)}
+function addXp(n){const l=level();S.xp+=n;if(level()>l)toast('Naik ke level '+level()+'! Jenis kelinci baru bisa ditemukan.')}
+function hud(){$('#c-coin').innerHTML=coinSVG+S.coins;$('#c-car').innerHTML=carrotSVG+S.carrots;
+  $('#c-lvl').textContent='Level '+level();$('#c-xp').style.width=(S.xp%40)/40*100+'%'}
+function nav(){$('#nav').innerHTML=TABS.map(([k,l])=>`<button class="${k===tab?'on':''}" data-act="tab" data-k="${k}" aria-current="${k===tab}"><svg viewBox="0 0 24 24">${ICONS[k]}</svg>${l}</button>`).join('')}
+const meter=(id,v,cls)=>`<div class="meter ${cls||''}"><i id="${id}" style="width:${v}%"></i></div>`;
+
+/* ---------- Tabs ---------- */
+function vTaman(){
+  const decor=DECOR.filter(d=>S.decor.includes(d.id)).map(d=>`<svg class="dc" style="left:${d.x}%;top:${d.y}%;z-index:${d.y}" viewBox="0 0 60 60" aria-hidden="true">${d.svg}</svg>`).join('');
+  const bn=S.bunnies.map(b=>{const p=pos[b.id]||(pos[b.id]={x:rnd(14,86),y:rnd(68,92),f:0});
+    return `<button class="sb" data-act="pet" data-id="${b.id}" style="left:${p.x}%;top:${p.y}%;z-index:${Math.round(p.y)}" aria-label="Elus ${b.name}"><span class="flip ${p.f?'r':''}"><span class="hopper">${bunnySVG(b)}</span></span><span class="tag">${b.name}</span></button>`}).join('');
+  const plots=S.plots.map((_,i)=>`<button class="plot" id="plot-${i}" data-act="plot" data-i="${i}">${plotHTML(i)}</button>`).join('');
+  const un=S.plots.length<6?`<button class="btn alt" style="margin-top:8px" data-act="unlock">Buka petak baru (${S.plots.length*25} koin)</button>`:'';
+  const cards=S.bunnies.map(b=>`<div class="card"><div class="pv">${bunnySVG(b)}</div><div class="grow"><h3>${b.name}</h3><div class="sub">${SP[b.sp].n} · ${PERS[b.pers]}</div>
+    <div class="meters"><span>Kenyang</span>${meter('h-'+b.id,b.hunger)}<span>Senang</span>${meter('j-'+b.id,b.joy,'j')}</div>
+    <div class="btns"><button class="btn" data-act="feed" data-id="${b.id}">Beri wortel (1)</button></div></div></div>`).join('');
+  return `<div class="scene" id="scene"><div class="sun"></div><div class="cl" style="width:60px;left:10%;top:12%"></div><div class="cl" style="width:44px;left:42%;top:22%"></div><div class="hill"></div>${decor}${bn}</div>
+  <div class="row"><span>Pesona taman: ${charm()}</span><span>Kelinci: ${S.bunnies.length}/${cap()}</span><span>Sudah diadopsi: ${S.adopted}</span></div>
+  <h2>Kebun wortel</h2><div class="plots">${plots}</div>${un}
+  <h2>Kelinci di taman</h2>${cards||'<p class="hint">Taman masih sepi. Buka tab Rescue untuk mengadopsi kelinci.</p>'}
+  <details><summary>Cara bermain</summary><ul><li>Ketuk kelinci di taman untuk mengelusnya.</li><li>Tanam dan panen wortel, lalu beri makan kelinci atau sajikan di kafe.</li><li>Di kafe, layani pelanggan dan jodohkan kelinci yang senang dengan keluarga baru.</li><li>Dekorasi menaikkan pesona: kapasitas kelinci, tip, dan hasil panen bertambah.</li></ul></details>
+  <p class="foot"><button class="btn alt" data-act="reset">${resetArm?'Yakin? Ketuk lagi untuk menghapus':'Mulai ulang'}</button></p>`}
+function plotHTML(i){const p=S.plots[i];
+  if(p.s===0)return `<svg viewBox="0 0 40 40"><ellipse cx="20" cy="28" rx="16" ry="8" fill="#6B4E3A"/></svg>Tanam`;
+  if(p.s===2)return `<svg viewBox="0 0 40 40"><ellipse cx="20" cy="28" rx="16" ry="8" fill="#6B4E3A"/><path d="M14 22c-4-8-6-9-8-10M20 20c0-7 1-10 3-12M26 22c3-6 6-8 9-8" stroke="#3F9B5A" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="20" cy="25" r="5" fill="#F0842C"/></svg>Panen!`;
+  const left=Math.max(0,Math.ceil((GROW-(Date.now()-p.t))/1000));
+  return `<svg viewBox="0 0 40 40"><ellipse cx="20" cy="28" rx="16" ry="8" fill="#6B4E3A"/><path d="M20 26c0-5 0-7-3-9M20 26c0-4 1-6 4-8" stroke="#3F9B5A" stroke-width="3" fill="none" stroke-linecap="round"/></svg><span id="pt-${i}">Tumbuh ${left}d</span>`}
+
+function vKafe(){
+  const menu=TREATS.map(t=>`<div>${t.n}<span>${t.c} wortel · ${t.pay} koin</span></div>`).join('');
+  const seats=customers.map(c=>{const t=TREATS.find(x=>x.id===c.order);
+    const ask=c.type==='order'?`Memesan ${t.n}.`:`Mencari teman bunny yang ${PERS[c.wish].toLowerCase()}.`;
+    const btn=c.type==='order'?`<button class="btn" data-act="serve" data-id="${c.id}" ${S.carrots<t.c?'disabled':''}>Sajikan (−${t.c} wortel)</button>`:`<button class="btn" data-act="match" data-id="${c.id}">Jodohkan kelinci</button>`;
+    return `<div class="card"><div class="pv">${personSVG(c.look)}</div><div class="grow"><h3>${c.name}</h3><div class="sub">${ask}</div><div style="margin-top:6px">${meter('p-'+c.id,100,'p')}</div><div class="btns">${btn}</div></div></div>`}).join('');
+  return `<h2>Menu kafe</h2><div class="menu">${menu}</div><p class="hint">Tip tiap pesanan: ${Math.floor(charm()/3)} koin (naik sesuai pesona taman).</p>
+  <h2>Meja pelanggan</h2>${seats||'<p class="hint">Belum ada pelanggan. Sebentar lagi ada yang datang.</p>'}`}
+
+function vRescue(){
+  const cs=S.cands.map((b,i)=>`<div class="card"><div class="pv">${bunnySVG(b)}</div><div class="grow"><h3>${b.name}</h3><div class="sub">${SP[b.sp].n} · ${PERS[b.pers]}</div><p class="hint" style="margin-top:4px">Ditemukan di ${b.place}. ${PERSD[b.pers]}</p>
+    <div class="btns"><button class="btn" data-act="adopt" data-i="${i}" ${S.coins<b.price?'disabled':''}>Selamatkan (${b.price} koin)</button></div></div></div>`).join('');
+  return `<h2>Kelinci butuh rumah</h2>${cs}<div class="btns"><button class="btn alt" data-act="reroll" ${S.coins<5?'disabled':''}>Cari lagi (5 koin)</button></div>
+  <p class="hint" style="margin-top:14px">Di dunia nyata, kelinci juga butuh perawatan seumur hidup. Pertimbangkan mengadopsi dari penampungan.</p>`}
+
+function vDekor(){
+  const g=DECOR.map(d=>{const own=S.decor.includes(d.id);return `<div class="card"><div class="pv"><svg viewBox="0 0 60 60">${d.svg}</svg></div><div><h3>${d.n}</h3><div class="sub">Pesona +${d.charm}</div></div>
+    <button class="btn" data-act="buy" data-id="${d.id}" ${own||S.coins<d.cost?'disabled':''}>${own?'Terpasang':d.cost+' koin'}</button></div>`}).join('');
+  return `<h2>Dekorasi taman</h2><p class="hint" style="margin-bottom:10px">Pesona saat ini ${charm()}. Tiap 8 pesona menambah 1 tempat kelinci, tiap 3 pesona menambah 1 koin tip, tiap 10 pesona menambah 1 wortel per panen.</p><div class="dgrid">${g}</div>`}
+
+function vMain(){
+  const cd=Math.max(0,Math.ceil((S.mgNext-Date.now())/1000));
+  if(mg&&mg.run){return `<h2>Petik Wortel</h2><div class="row" style="justify-content:space-around"><span class="big" id="mg-score">Skor ${mg.score}</span><span class="big" id="mg-time">${mg.left}d</span></div>
+    <div class="holes">${[0,1,2,3,4,5,6,7,8].map(i=>`<button class="hole" id="hole-${i}" data-act="hole" data-i="${i}" aria-label="Lubang ${i+1}">${carrotSVG}</button>`).join('')}</div>`}
+  const res=mg&&mg.done?`<div class="card"><div class="grow"><h3>Hasil terakhir</h3><p class="hint">Skor ${mg.score}: dapat ${mg.score*2} koin dan ${Math.floor(mg.score/3)} wortel.</p></div></div>`:'';
+  return `<h2>Petik Wortel</h2><p class="hint" style="margin-bottom:10px">Ketuk wortel yang muncul dari lubang selama 20 detik. Tiap wortel bernilai 2 koin, dan tiap 3 wortel menghasilkan 1 wortel simpanan.</p>${res}
+  <button class="btn" id="mg-start" data-act="startmg" ${cd>0?'disabled':''}>${cd>0?'Tunggu '+cd+' detik':'Mulai'}</button>`}
+
+function render(){stopMgIfLeft();$('#view').innerHTML=({taman:vTaman,kafe:vKafe,rescue:vRescue,dekor:vDekor,main:vMain})[tab]();hud();nav()}
+function stopMgIfLeft(){if(tab!=='main'&&mg&&mg.run)endMg()}
+
+/* ---------- Actions ---------- */
+function sceneHeart(el){const sc=$('#scene');if(!sc||!el)return;const r=el.getBoundingClientRect(),s=sc.getBoundingClientRect();
+  const h=document.createElement('span');h.className='hf';h.innerHTML=heartSVG;h.style.left=(r.left-s.left+r.width/2)+'px';h.style.top=(r.top-s.top+10)+'px';sc.appendChild(h);h.addEventListener('animationend',()=>h.remove());setTimeout(()=>h.remove(),1200)}
+const act={
+  tab(d){tab=d.k;render();$('#view').scrollTop=0},
+  pet(d,el){const b=S.bunnies.find(x=>x.id==d.id);if(!b)return;if(b.joy<100)addXp(0.25);b.joy=clamp(b.joy+8,0,100);sceneHeart(el);upd(b)},
+  feed(d){const b=S.bunnies.find(x=>x.id==d.id);if(!b)return;if(b.hunger>90)return toast(b.name+' sudah kenyang.');if(S.carrots<1)return toast('Wortel habis. Panen dulu di kebun.');
+    S.carrots--;b.hunger=clamp(b.hunger+35,0,100);b.joy=clamp(b.joy+4,0,100);hud();upd(b)},
+  plot(d){const p=S.plots[d.i];if(p.s===0){p.s=1;p.t=Date.now()}else if(p.s===2){const n=3+Math.floor(charm()/10);S.carrots+=n;p.s=0;addXp(2);toast('Panen '+n+' wortel!')}else return;
+    $('#plot-'+d.i).innerHTML=plotHTML(d.i);hud()},
+  unlock(){const c=S.plots.length*25;if(S.coins<c)return toast('Koin belum cukup.');S.coins-=c;S.plots.push({s:0,t:0});render()},
+  serve(d){const c=customers.find(x=>x.id==d.id);if(!c)return;const t=TREATS.find(x=>x.id===c.order);if(S.carrots<t.c)return toast('Wortel kurang.');
+    const left=1-(Date.now()-c.t0)/PAT;const pay=t.pay+Math.floor(charm()/3)+(left>.5?4:0);S.carrots-=t.c;S.coins+=pay;addXp(3);
+    customers=customers.filter(x=>x!==c);toast(c.name+' senang! +'+pay+' koin'+(left>.5?' (bonus cepat)':''));render()},
+  match(d){const c=customers.find(x=>x.id==d.id);const list=S.bunnies.filter(b=>b.joy>=50);
+    if(!list.length)return toast('Belum ada kelinci yang cukup senang (minimal 50). Beri makan dan elus dulu.');
+    const sh=$('#sheet');sh.hidden=false;sh.innerHTML=`<div class="in" role="dialog" aria-label="Pilih kelinci"><h2 style="margin-top:0">Jodohkan dengan ${c.name}</h2><p class="hint" style="margin-bottom:10px">${c.name} mencari kelinci yang ${PERS[c.wish].toLowerCase()}. Kecocokan sifat memberi hadiah lebih besar.</p>`+
+      list.map(b=>`<div class="card"><div class="pv">${bunnySVG(b)}</div><div class="grow"><h3>${b.name}</h3><div class="sub">${PERS[b.pers]}${b.pers===c.wish?' · cocok!':''}</div></div><button class="btn" data-act="pick" data-c="${c.id}" data-id="${b.id}">Pilih</button></div>`).join('')+
+      `<button class="btn alt" data-act="closesheet" style="width:100%">Batal</button></div>`},
+  pick(d){const c=customers.find(x=>x.id==d.c),b=S.bunnies.find(x=>x.id==d.id);if(!c||!b)return closeSheet();
+    const ok=b.pers===c.wish,r=50+(ok?35:0)+level()*3;S.coins+=r;addXp(15+(ok?10:0));S.adopted++;
+    S.bunnies=S.bunnies.filter(x=>x!==b);delete pos[b.id];customers=customers.filter(x=>x!==c);closeSheet();toast(b.name+' pulang bersama '+c.name+'. +'+r+' koin');render()},
+  closesheet(){closeSheet()},
+  adopt(d){const b=S.cands[d.i];if(!b)return;if(S.bunnies.length>=cap())return toast('Taman penuh. Tambah dekorasi atau jodohkan kelinci dulu.');
+    if(S.coins<b.price)return toast('Koin belum cukup.');S.coins-=b.price;delete b.place;delete b.price;S.bunnies.push(b);S.cands[d.i]=mkCand();addXp(5);toast(b.name+' bergabung di taman!');render()},
+  reroll(){if(S.coins<5)return;S.coins-=5;S.cands=[mkCand(),mkCand(),mkCand()];render()},
+  buy(d){const x=DECOR.find(z=>z.id===d.id);if(!x||S.decor.includes(x.id)||S.coins<x.cost)return;S.coins-=x.cost;S.decor.push(x.id);addXp(6);toast(x.n+' terpasang di taman.');render()},
+  startmg(){if(Date.now()<S.mgNext)return;mg={run:1,score:0,left:20,act:-1,n:0};render();mg.iv=setInterval(mgTick,300)},
+  hole(d){if(!mg||!mg.run||mg.act!==+d.i)return;mg.score++;setHole(mg.act,false);mg.act=-1;$('#mg-score').textContent='Skor '+mg.score},
+  reset(){if(!resetArm){resetArm=true;render();setTimeout(()=>{resetArm=false;if(tab==='taman'&&!document.hidden)render()},4000);return}
+    resetArm=false;try{localStorage.removeItem(KEY)}catch(e){}pos={};customers=[];fresh();tab='taman';render();toast('Permainan dimulai dari awal.')}
+};
+function closeSheet(){const s=$('#sheet');s.hidden=true;s.innerHTML=''}
+function upd(b){const h=$('#h-'+b.id),j=$('#j-'+b.id);if(h)h.style.width=b.hunger+'%';if(j)j.style.width=b.joy+'%'}
+document.addEventListener('click',e=>{const t=e.target.closest('[data-act]');if(t&&act[t.dataset.act])act[t.dataset.act](t.dataset,t)});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSheet()});
+
+/* ---------- Minigame ---------- */
+function setHole(i,on){const h=$('#hole-'+i);if(h)h.classList.toggle('on',on)}
+function mgTick(){if(!mg||!mg.run)return;mg.n++;
+  if(mg.n%3===0){mg.left--;const t=$('#mg-time');if(t)t.textContent=mg.left+'d';if(mg.left<=0)return endMg()}
+  if(mg.n%2===0){if(mg.act>=0)setHole(mg.act,false);let i;do{i=ri(0,8)}while(i===mg.act);mg.act=i;setHole(i,true)}}
+function endMg(){if(!mg)return;clearInterval(mg.iv);mg.run=0;mg.done=1;const c=Math.floor(mg.score/3);S.coins+=mg.score*2;S.carrots+=c;addXp(Math.floor(mg.score/4));S.mgNext=Date.now()+30000;
+  if(tab==='main')render();else hud();toast('Selesai! Skor '+mg.score+', +'+mg.score*2+' koin')}
+
+/* ---------- Loop ---------- */
+function spawn(){if(customers.length>=3)return;const adopt=S.bunnies.length>0&&Math.random()<.35;
+  customers.push({id:++cid,name:pick(CN),type:adopt?'adopt':'order',order:pick(TREATS).id,wish:pick(Object.keys(PERS)),t0:Date.now(),
+    look:{skin:pick(['#F2C9A5','#D9A07A','#B97A55','#8D5A3B']),hair:pick(['#2B2320','#4A3326','#1E1E24','#7A4B2A']),shirt:pick(['#6CA6C9','#E39B6B','#9D8CD6','#7BC28F','#E27D93'])}});
+  if(tab==='kafe')render()}
+function wander(){S.bunnies.forEach(b=>{if(tickN%4!==b.id%4||Math.random()>.6)return;const p=pos[b.id]||(pos[b.id]={x:50,y:80,f:0});
+  const nx=clamp(p.x+rnd(-22,22),10,90),ny=clamp(p.y+rnd(-8,8),68,92);p.f=nx>p.x?1:0;p.x=nx;p.y=ny;
+  const el=document.querySelector('.sb[data-id="'+b.id+'"]');if(!el)return;el.style.left=nx+'%';el.style.top=ny+'%';el.style.zIndex=Math.round(ny);
+  el.querySelector('.flip').classList.toggle('r',!!p.f);el.classList.add('hop');setTimeout(()=>el.classList.remove('hop'),2400)})}
+function tick(){tickN++;const now=Date.now();
+  if(tickN%6===0)S.bunnies.forEach(b=>{b.hunger=clamp(b.hunger-(b.pers==='rakus'?2.2:1.5),0,100);b.joy=clamp(b.joy-(b.hunger<25?2:.8),0,100);upd(b)});
+  S.plots.forEach((p,i)=>{if(p.s===1){if(now-p.t>=GROW){p.s=2;const e=$('#plot-'+i);if(e){e.innerHTML=plotHTML(i);e.classList.add('ready')}}else{const e=$('#pt-'+i);if(e)e.textContent='Tumbuh '+Math.ceil((GROW-(now-p.t))/1000)+'d'}}
+    if(p.s===2){const e=$('#plot-'+i);if(e)e.classList.add('ready')}});
+  let gone=false;customers=customers.filter(c=>{const l=1-(now-c.t0)/PAT;if(l<=0){toast(c.name+' pulang karena menunggu terlalu lama.');gone=true;return false}
+    const e=$('#p-'+c.id);if(e)e.style.width=l*100+'%';return true});
+  if(gone&&tab==='kafe')render();
+  if(now>=nextArrive){spawn();nextArrive=now+rnd(9000,17000)}
+  if(tab==='main'&&!(mg&&mg.run)){const b=$('#mg-start'),cd=Math.ceil((S.mgNext-now)/1000);if(b){b.disabled=cd>0;b.textContent=cd>0?'Tunggu '+cd+' detik':'Mulai'}}
+  wander();if(tickN%5===0)save()}
+
+load();render();spawn();nextArrive=Date.now()+8000;setInterval(tick,1000);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)save()});
+</script>
+
+</body></html>
